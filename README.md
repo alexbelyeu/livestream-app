@@ -9,6 +9,13 @@ A 1-to-many livestreaming app built with React Native and Expo, demonstrating re
 - **Camera Controls**: Toggle camera, microphone, and flip between front/back cameras
 - **Dark Theme**: Twitch-inspired UI with purple accents
 
+## Demo
+
+| Broadcaster | Viewer |
+|:-----------:|:------:|
+| <img width="262" height="567" alt="broadcaster" src="https://github.com/user-attachments/assets/c6768196-08ca-421a-94c4-83e3af23db74" /> | <img width="262" height="567" alt="viewer" src="https://github.com/user-attachments/assets/4115bfb3-4496-4777-b343-1cfa7f5340af" />|
+
+
 ## Tech Stack
 
 - **React Native** with **Expo** (managed workflow + prebuild)
