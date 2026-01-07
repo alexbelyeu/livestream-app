@@ -1,13 +1,14 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 import {
   useCamera,
   useConnection,
   useMicrophone,
   usePeers,
   useSandbox,
-} from '@fishjam-cloud/react-native-client';
-import { FISHJAM_CONFIG } from '@/config';
-import { useStreamStore } from '@/stores/streamStore';
+  type RemotePeer,
+} from "@/lib/fishjam";
+import { FISHJAM_CONFIG } from "@/config";
+import { useStreamStore } from "@/stores/streamStore";
 
 interface UseStreamingReturn {
   // State
@@ -16,7 +17,7 @@ interface UseStreamingReturn {
   isCameraOn: boolean;
   isMicOn: boolean;
   error: string | null;
-  remotePeers: ReturnType<typeof usePeers>['remotePeers'];
+  remotePeers: RemotePeer[];
 
   // Actions
   startBroadcast: (roomName: string, displayName: string) => Promise<void>;
@@ -32,7 +33,8 @@ export function useStreaming(): UseStreamingReturn {
   const [isConnecting, setIsConnecting] = useState(false);
 
   // Fishjam hooks
-  const { prepareCamera, isCameraOn, toggleCamera, switchCamera, cameras, currentCamera } = useCamera();
+  const { prepareCamera, isCameraOn, toggleCamera, switchCamera, cameras, currentCamera } =
+    useCamera();
   const { isMicrophoneOn, toggleMicrophone } = useMicrophone();
   const { joinRoom, leaveRoom: fishjamLeaveRoom, peerStatus } = useConnection();
   const { remotePeers } = usePeers();
@@ -45,13 +47,13 @@ export function useStreaming(): UseStreamingReturn {
   // Store actions
   const { startBroadcast: storeStartBroadcast, endBroadcast: storeEndBroadcast } = useStreamStore();
 
-  const isConnected = peerStatus === 'connected';
+  const isConnected = peerStatus === "connected";
 
   // Start broadcasting (as host)
   const startBroadcast = useCallback(
     async (roomName: string, displayName: string) => {
       // Prevent rejoining if already connected
-      if (peerStatus === 'connected' || peerStatus === 'connecting') {
+      if (peerStatus === "connected" || peerStatus === "connecting") {
         return;
       }
 
@@ -66,7 +68,7 @@ export function useStreaming(): UseStreamingReturn {
         const peerToken = await getSandboxPeerToken(roomName, displayName);
 
         if (!peerToken) {
-          throw new Error('Failed to get peer token');
+          throw new Error("Failed to get peer token");
         }
 
         // Join the room
@@ -79,9 +81,9 @@ export function useStreaming(): UseStreamingReturn {
         // Update store
         storeStartBroadcast(roomName, peerToken);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to start broadcast';
+        const message = err instanceof Error ? err.message : "Failed to start broadcast";
         setError(message);
-        console.error('Start broadcast error:', err);
+        console.error("Start broadcast error:", err);
         throw err;
       } finally {
         setIsConnecting(false);
@@ -94,7 +96,7 @@ export function useStreaming(): UseStreamingReturn {
   const joinAsViewer = useCallback(
     async (roomName: string, displayName: string) => {
       // Prevent rejoining if already connected
-      if (peerStatus === 'connected' || peerStatus === 'connecting') {
+      if (peerStatus === "connected" || peerStatus === "connecting") {
         return;
       }
 
@@ -106,7 +108,7 @@ export function useStreaming(): UseStreamingReturn {
         const peerToken = await getSandboxPeerToken(roomName, displayName);
 
         if (!peerToken) {
-          throw new Error('Failed to get peer token');
+          throw new Error("Failed to get peer token");
         }
 
         // Join the room (without camera)
@@ -116,9 +118,9 @@ export function useStreaming(): UseStreamingReturn {
           peerMetadata: { displayName, isHost: false },
         });
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to join stream';
+        const message = err instanceof Error ? err.message : "Failed to join stream";
         setError(message);
-        console.error('Join stream error:', err);
+        console.error("Join stream error:", err);
         throw err;
       } finally {
         setIsConnecting(false);
@@ -134,9 +136,9 @@ export function useStreaming(): UseStreamingReturn {
       await fishjamLeaveRoom();
       storeEndBroadcast();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to leave room';
+      const message = err instanceof Error ? err.message : "Failed to leave room";
       setError(message);
-      console.error('Leave room error:', err);
+      console.error("Leave room error:", err);
     }
   }, [fishjamLeaveRoom, storeEndBroadcast]);
 

@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { VideoRendererView, type TrackId } from '@fishjam-cloud/react-native-client';
-import { colors, typography, borderRadius } from '@/theme';
+import { View, Text, StyleSheet } from "react-native";
+import { VideoRendererView } from "@/lib/fishjam";
+
+type TrackId = string;
+import { colors, typography, borderRadius } from "@/theme";
 
 interface StreamPlayerProps {
   trackId?: TrackId;
@@ -18,11 +20,7 @@ export function StreamPlayer({ trackId, style }: StreamPlayerProps) {
 
   return (
     <View style={[styles.container, style]}>
-      <VideoRendererView
-        trackId={trackId}
-        style={styles.video}
-        videoLayout="FIT"
-      />
+      <VideoRendererView trackId={trackId} style={styles.video} videoLayout="FIT" />
     </View>
   );
 }
@@ -39,8 +37,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   placeholderText: {
     ...typography.body,

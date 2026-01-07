@@ -1,13 +1,13 @@
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, Alert } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
-import { VideoPreviewView } from '@fishjam-cloud/react-native-client';
-import { useEffect, useState } from 'react';
-import * as Clipboard from 'expo-clipboard';
-import { colors, typography, spacing, borderRadius } from '@/theme';
-import { useStreamStore } from '@/stores/streamStore';
-import { useStreaming } from '@/hooks/useStreaming';
-import { useAuthStore } from '@/stores/authStore';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Alert } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router, useLocalSearchParams } from "expo-router";
+import { VideoPreviewView } from "@/lib/fishjam";
+import { useEffect, useState } from "react";
+import * as Clipboard from "expo-clipboard";
+import { colors, typography, spacing, borderRadius } from "@/theme";
+import { useStreamStore } from "@/stores/streamStore";
+import { useStreaming } from "@/hooks/useStreaming";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function BroadcastScreen() {
   const insets = useSafeAreaInsets();
@@ -41,7 +41,7 @@ export default function BroadcastScreen() {
           const broadcasterName = `${user.displayName || user.username}-host`;
           await startBroadcast(roomName, broadcasterName);
         } catch (err) {
-          console.error('Failed to start broadcast:', err);
+          console.error("Failed to start broadcast:", err);
         }
       }
     };
@@ -56,7 +56,7 @@ export default function BroadcastScreen() {
   const handleCopyRoomId = async () => {
     if (roomName) {
       await Clipboard.setStringAsync(roomName);
-      Alert.alert('Copied!', `Room ID: ${roomName}\n\nJoin at room.fishjam.io`);
+      Alert.alert("Copied!", `Room ID: ${roomName}\n\nJoin at room.fishjam.io`);
     }
   };
 
@@ -105,12 +105,12 @@ export default function BroadcastScreen() {
           </Pressable>
 
           <View style={[styles.liveBadge, !isConnected && styles.liveBadgeConnecting]}>
-            <Text style={styles.liveText}>{isConnected ? 'LIVE' : 'CONNECTING'}</Text>
+            <Text style={styles.liveText}>{isConnected ? "LIVE" : "CONNECTING"}</Text>
           </View>
 
           <View style={styles.streamInfo}>
             <Text style={styles.streamTitle} numberOfLines={1}>
-              {streamTitle || 'Untitled Stream'}
+              {streamTitle || "Untitled Stream"}
             </Text>
           </View>
 
@@ -125,26 +125,19 @@ export default function BroadcastScreen() {
               style={[styles.controlButton, !isMicOn && styles.controlButtonActive]}
               onPress={toggleMicrophone}
             >
-              <Text style={styles.controlIcon}>{isMicOn ? '🎤' : '🔇'}</Text>
-              <Text style={styles.controlLabel}>
-                {isMicOn ? 'Mute' : 'Unmute'}
-              </Text>
+              <Text style={styles.controlIcon}>{isMicOn ? "🎤" : "🔇"}</Text>
+              <Text style={styles.controlLabel}>{isMicOn ? "Mute" : "Unmute"}</Text>
             </Pressable>
 
             <Pressable
               style={[styles.controlButton, !isCameraOn && styles.controlButtonActive]}
               onPress={toggleCamera}
             >
-              <Text style={styles.controlIcon}>{isCameraOn ? '📹' : '📷'}</Text>
-              <Text style={styles.controlLabel}>
-                {isCameraOn ? 'Camera' : 'Off'}
-              </Text>
+              <Text style={styles.controlIcon}>{isCameraOn ? "📹" : "📷"}</Text>
+              <Text style={styles.controlLabel}>{isCameraOn ? "Camera" : "Off"}</Text>
             </Pressable>
 
-            <Pressable
-              style={styles.controlButton}
-              onPress={switchCamera}
-            >
+            <Pressable style={styles.controlButton} onPress={switchCamera}>
               <Text style={styles.controlIcon}>🔄</Text>
               <Text style={styles.controlLabel}>Flip</Text>
             </Pressable>
@@ -167,8 +160,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.md,
   },
   loadingText: {
@@ -178,7 +171,7 @@ const styles = StyleSheet.create({
   errorText: {
     ...typography.body,
     color: colors.error,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: spacing.lg,
   },
   retryButton: {
@@ -198,8 +191,8 @@ const styles = StyleSheet.create({
   cameraOff: {
     flex: 1,
     backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   cameraOffText: {
     ...typography.h3,
@@ -207,11 +200,11 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
   },
@@ -220,8 +213,8 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: colors.overlay,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   closeText: {
     color: colors.text,
@@ -234,12 +227,12 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   liveBadgeConnecting: {
-    backgroundColor: colors.warning || '#FFA500',
+    backgroundColor: colors.warning || "#FFA500",
   },
   liveText: {
     ...typography.caption,
     color: colors.text,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   streamInfo: {
     flex: 1,
@@ -258,18 +251,18 @@ const styles = StyleSheet.create({
   copyText: {
     ...typography.caption,
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   bottomBar: {
     padding: spacing.lg,
   },
   controls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     gap: spacing.lg,
   },
   controlButton: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: spacing.md,
     backgroundColor: colors.overlay,
     borderRadius: borderRadius.lg,
@@ -287,7 +280,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   endButton: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: spacing.md,
     backgroundColor: colors.error,
     borderRadius: borderRadius.lg,
@@ -300,6 +293,6 @@ const styles = StyleSheet.create({
   endLabel: {
     ...typography.caption,
     color: colors.text,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });

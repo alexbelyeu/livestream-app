@@ -1,15 +1,15 @@
-import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
-import { router } from 'expo-router';
-import { VideoPreviewView, useCamera } from '@fishjam-cloud/react-native-client';
-import { colors, typography, spacing, borderRadius } from '@/theme';
-import { usePermissions } from '@/hooks/usePermissions';
-import { useStreamStore } from '@/stores/streamStore';
-import { useAuthStore } from '@/stores/authStore';
+import { View, Text, StyleSheet, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useState, useEffect } from "react";
+import { router } from "expo-router";
+import { VideoPreviewView, useCamera, isFishjamAvailable } from "@/lib/fishjam";
+import { colors, typography, spacing, borderRadius } from "@/theme";
+import { usePermissions } from "@/hooks/usePermissions";
+import { useStreamStore } from "@/stores/streamStore";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function GoLiveScreen() {
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [isPreparingCamera, setIsPreparingCamera] = useState(false);
 
   const { allGranted, isLoading: permissionsLoading, requestPermissions } = usePermissions();
@@ -25,7 +25,7 @@ export default function GoLiveScreen() {
         try {
           await prepareCamera({ cameraEnabled: true });
         } catch (error) {
-          console.error('Failed to prepare camera:', error);
+          console.error("Failed to prepare camera:", error);
         } finally {
           setIsPreparingCamera(false);
         }
@@ -40,12 +40,12 @@ export default function GoLiveScreen() {
 
   const handleGoLive = () => {
     // Generate a unique room name based on user and timestamp
-    const roomName = `stream-${user?.id || 'anon'}-${Date.now()}`;
+    const roomName = `stream-${user?.id || "anon"}-${Date.now()}`;
     setStreamTitle(title);
 
     // Pass room name to broadcast screen via params
     router.push({
-      pathname: '/(app)/stream/broadcast',
+      pathname: "/(app)/stream/broadcast",
       params: { roomName, title },
     });
   };
@@ -56,7 +56,7 @@ export default function GoLiveScreen() {
         <View style={styles.preview}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.previewHint}>
-            {permissionsLoading ? 'Checking permissions...' : 'Starting camera...'}
+            {permissionsLoading ? "Checking permissions..." : "Starting camera..."}
           </Text>
         </View>
       );
@@ -88,10 +88,22 @@ export default function GoLiveScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
         <Text style={styles.title}>Go Live</Text>
       </View>
+
+      {/* Warning banner when native module is unavailable */}
+      {!isFishjamAvailable && (
+        <View style={styles.warningBanner}>
+          <Text style={styles.warningText}>
+            ⚠️ Streaming unavailable - native module not found.
+          </Text>
+          <Text style={styles.warningHint}>
+            Run on a real device or rebuild the app with native code.
+          </Text>
+        </View>
+      )}
 
       <View style={styles.content}>
         {/* Camera preview */}
@@ -111,15 +123,12 @@ export default function GoLiveScreen() {
 
         {/* Go Live button */}
         <Pressable
-          style={[
-            styles.button,
-            (!title || !allGranted) && styles.buttonDisabled,
-          ]}
+          style={[styles.button, (!title || !allGranted) && styles.buttonDisabled]}
           onPress={handleGoLive}
           disabled={!title || !allGranted}
         >
           <Text style={styles.buttonText}>
-            {!allGranted ? 'Grant Permissions First' : 'Start Streaming'}
+            {!allGranted ? "Grant Permissions First" : "Start Streaming"}
           </Text>
         </Pressable>
       </View>
@@ -149,17 +158,17 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: colors.border,
-    borderStyle: 'dashed',
+    borderStyle: "dashed",
   },
   cameraContainer: {
     aspectRatio: 16 / 9,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   camera: {
     flex: 1,
@@ -172,7 +181,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textDisabled,
     marginTop: spacing.xs,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: spacing.lg,
   },
   settings: {
@@ -181,7 +190,7 @@ const styles = StyleSheet.create({
   label: {
     ...typography.bodySmall,
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   input: {
     backgroundColor: colors.surface,
@@ -197,8 +206,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.md,
-    alignItems: 'center',
-    marginTop: 'auto',
+    alignItems: "center",
+    marginTop: "auto",
     marginBottom: spacing.lg,
   },
   buttonDisabled: {
@@ -207,5 +216,22 @@ const styles = StyleSheet.create({
   buttonText: {
     ...typography.button,
     color: colors.text,
+  },
+  warningBanner: {
+    backgroundColor: "#3D2A1D",
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: "#5C3D2E",
+  },
+  warningText: {
+    ...typography.bodySmall,
+    color: "#FFB347",
+    fontWeight: "600",
+  },
+  warningHint: {
+    ...typography.caption,
+    color: "#CC8844",
+    marginTop: 2,
   },
 });
