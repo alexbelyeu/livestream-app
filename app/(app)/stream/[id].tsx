@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { VideoRendererView } from '@fishjam-cloud/react-native-client';
-import { colors, typography, spacing, borderRadius } from '@/theme';
-import { useStreaming } from '@/hooks/useStreaming';
-import { useAuthStore } from '@/stores/authStore';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLocalSearchParams, router } from "expo-router";
+import { useEffect, useState } from "react";
+import { VideoRendererView } from "@/lib/fishjam";
+import { colors, typography, spacing, borderRadius } from "@/theme";
+import { useStreaming } from "@/hooks/useStreaming";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function WatchStreamScreen() {
   const { id, title, streamerName } = useLocalSearchParams<{
@@ -17,14 +17,7 @@ export default function WatchStreamScreen() {
   const user = useAuthStore((state) => state.user);
   const [hasJoined, setHasJoined] = useState(false);
 
-  const {
-    isConnected,
-    isConnecting,
-    error,
-    remotePeers,
-    joinAsViewer,
-    leaveRoom,
-  } = useStreaming();
+  const { isConnected, isConnecting, error, remotePeers, joinAsViewer, leaveRoom } = useStreaming();
 
   // Join the room as viewer when screen mounts
   useEffect(() => {
@@ -36,7 +29,7 @@ export default function WatchStreamScreen() {
           const viewerName = `${user.displayName || user.username}-viewer-${Date.now()}`;
           await joinAsViewer(id, viewerName);
         } catch (err) {
-          console.error('Failed to join stream:', err);
+          console.error("Failed to join stream:", err);
         }
       }
     };
@@ -56,9 +49,7 @@ export default function WatchStreamScreen() {
   });
 
   // Get the host's video track
-  const hostVideoTrack = hostPeer?.tracks.find(
-    (track) => track.type === 'Video' && track.isActive
-  );
+  const hostVideoTrack = hostPeer?.tracks.find((track) => track.type === "Video" && track.isActive);
 
   // Show loading state while connecting
   if (isConnecting) {
@@ -90,19 +81,16 @@ export default function WatchStreamScreen() {
     <View style={styles.container}>
       {/* Video player */}
       {hostVideoTrack ? (
-        <VideoRendererView
-          trackId={hostVideoTrack.id}
-          style={styles.fullscreen}
-        />
+        <VideoRendererView trackId={hostVideoTrack.id} style={styles.fullscreen} />
       ) : (
         <View style={styles.player}>
           <Text style={styles.playerText}>
-            {isConnected ? 'Waiting for streamer...' : 'Connecting...'}
+            {isConnected ? "Waiting for streamer..." : "Connecting..."}
           </Text>
           <Text style={styles.playerHint}>
             {remotePeers.length > 0
               ? `${remotePeers.length} peer(s) in room`
-              : 'No one else in room yet'}
+              : "No one else in room yet"}
           </Text>
         </View>
       )}
@@ -115,7 +103,7 @@ export default function WatchStreamScreen() {
           </Pressable>
 
           <View style={[styles.liveBadge, !hostVideoTrack && styles.liveBadgeWaiting]}>
-            <Text style={styles.liveText}>{hostVideoTrack ? 'LIVE' : 'WAITING'}</Text>
+            <Text style={styles.liveText}>{hostVideoTrack ? "LIVE" : "WAITING"}</Text>
           </View>
 
           <View style={styles.viewerCount}>
@@ -126,13 +114,11 @@ export default function WatchStreamScreen() {
         <View style={[styles.bottomBar, { paddingBottom: insets.bottom + spacing.md }]}>
           <View style={styles.streamerInfo}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
-                {(streamerName || 'S').charAt(0).toUpperCase()}
-              </Text>
+              <Text style={styles.avatarText}>{(streamerName || "S").charAt(0).toUpperCase()}</Text>
             </View>
             <View>
-              <Text style={styles.streamTitle}>{title || 'Stream'}</Text>
-              <Text style={styles.streamerName}>{streamerName || 'Streamer'}</Text>
+              <Text style={styles.streamTitle}>{title || "Stream"}</Text>
+              <Text style={styles.streamerName}>{streamerName || "Streamer"}</Text>
             </View>
           </View>
         </View>
@@ -148,8 +134,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.md,
   },
   loadingText: {
@@ -159,7 +145,7 @@ const styles = StyleSheet.create({
   errorText: {
     ...typography.body,
     color: colors.error,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: spacing.lg,
   },
   retryButton: {
@@ -179,8 +165,8 @@ const styles = StyleSheet.create({
   player: {
     flex: 1,
     backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   playerText: {
     ...typography.h3,
@@ -193,11 +179,11 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
   },
@@ -206,8 +192,8 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: colors.overlay,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   closeText: {
     color: colors.text,
@@ -225,14 +211,14 @@ const styles = StyleSheet.create({
   liveText: {
     ...typography.caption,
     color: colors.text,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   viewerCount: {
     backgroundColor: colors.overlay,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   viewerText: {
     ...typography.caption,
@@ -240,11 +226,11 @@ const styles = StyleSheet.create({
   },
   bottomBar: {
     padding: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   streamerInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
   },
   avatar: {
@@ -252,18 +238,18 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   avatarText: {
     ...typography.body,
     color: colors.text,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   streamTitle: {
     ...typography.body,
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   streamerName: {
     ...typography.caption,

@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { VideoPreviewView } from '@fishjam-cloud/react-native-client';
-import { colors, typography, spacing, borderRadius } from '@/theme';
+import { View, Text, StyleSheet } from "react-native";
+import { VideoPreviewView } from "@/lib/fishjam";
+import { colors, typography, spacing, borderRadius } from "@/theme";
 
 interface VideoPreviewProps {
   isActive?: boolean;
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   video: {
     flex: 1,
@@ -37,8 +37,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   placeholderText: {
     ...typography.body,
